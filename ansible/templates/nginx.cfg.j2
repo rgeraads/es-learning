@@ -1,0 +1,20 @@
+server {
+    server_name es-learning.dev;
+
+    listen      80;
+    root        /vagrant/web;
+
+    access_log  /var/log/nginx/access.log;
+    error_log   /var/log/nginx/error.log;
+
+    location / {
+        try_files $uri /index.php;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass         unix:/var/run/php/php7.0-fpm.sock;
+        fastcgi_read_timeout 240;
+        fastcgi_index        index.php;
+        include              fastcgi_params;
+    }
+}

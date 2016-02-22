@@ -1,0 +1,46 @@
+---
+- name: ES-learning Provisioning
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: add php7.0 repository
+    apt_repository: repo='ppa:ondrej/php'
+
+  - name: update packages
+    apt: update_cache=yes
+
+  - name: install packages
+    apt: name={{ item }} state=latest
+    with_items:
+      - vim
+      - mysql-server
+      - python-mysqldb
+      - mongodb
+      - php7.0
+      - php7.0-fpm
+      - php7.0-mysql
+      - php-mongodb
+      - php-xdebug
+      - nginx
+
+  - name: unlink default nginx configuration
+    file: path=/etc/nginx/sites-enabled/default state=absent
+
+  - name: delete default nginx configuration
+    file: path=/etc/nginx/sites-available/default state=absent
+
+  - name: copy nginx es-learning configuration
+    template: src=templates/nginx.cfg.j2 dest=/etc/nginx/sites-available/es-learning
+
+  - name: enable nginx es-learning configuration
+    file: src=/etc/nginx/sites-available/es-learning dest=/etc/nginx/sites-enabled/es-learning state=link
+
+  - name: create database
+    mysql_db: name=user state=present
+
+  - name: create database user
+    mysql_user: name=vagrant password=vagrant host=% priv=*.*:ALL state=present
+
+  - name: restart nginx
+    service: name=nginx state=restarted

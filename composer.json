@@ -1,0 +1,16 @@
+{
+    "name": "randy/es-learning",
+    "description": "step-by-step from scratch to event-sourcing",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Randy Geraads",
+            "email": "r.geraads@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "": "src"
+        }
+    }
+}
