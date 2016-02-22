@@ -34,7 +34,7 @@ final class Mysql
      *
      * @return array
      */
-    public function select(string $table, array $columns, array $values)
+    public function select(string $table, array $columns = [], array $values = [])
     {
         $queryString = "SELECT * FROM `$table`";
 

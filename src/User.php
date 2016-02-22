@@ -13,33 +13,19 @@ final class User
         $this->lastName  = $lastName;
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
+    /**
+     * @return void
+     */
     public function setFirstName(string $firstName)
     {
         $this->firstName = $firstName;
     }
 
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function setLastName($lastName)
+    /**
+     * @return void
+     */
+    public function setLastName(string $lastName)
     {
         $this->lastName = $lastName;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function getFullName(): string
-    {
-        return $this->firstName . ' ' . $this->lastName;
     }
 }
