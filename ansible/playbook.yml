@@ -37,7 +37,7 @@
     file: src=/etc/nginx/sites-available/es-learning dest=/etc/nginx/sites-enabled/es-learning state=link
 
   - name: create database
-    mysql_db: name=user state=present
+    mysql_db: name=users state=present
 
   - name: create database user
     mysql_user: name=vagrant password=vagrant host=% priv=*.*:ALL state=present

@@ -8,7 +8,7 @@ final class UserReadModel
 
     private function __construct(int $id, string $firstName, string $lastName)
     {
-//        $this->guardPublicMethodsHaveReturnTypes();
+        $this->guardPublicMethodsHaveReturnTypes();
 
         $this->id        = $id;
         $this->firstName = $firstName;
@@ -42,15 +42,18 @@ final class UserReadModel
 
     private function guardPublicMethodsHaveReturnTypes()
     {
-        $ref = new ReflectionClass($this);
-        $staticMethods = $ref->getMethods(ReflectionMethod::IS_STATIC);
-        $methods = $ref->getMethods(ReflectionMethod::IS_PUBLIC);
+        $reflectionClass = new ReflectionClass($this);
+        $methods         = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
-        $methods = array_diff($methods, $staticMethods);
+        /** @var ReflectionMethod[] $methods */
         foreach ($methods as $method) {
-            $refM = new ReflectionFunction($method);
-            if ($refM->getReturnType() === null) {
-                throw new \Exception(sprintf('All public methods in the %s require a return type. None found for %s', get_class($this), $method));
+            if ($method->getName() == '__construct') {
+                continue;
+            }
+
+            $reflectionMethod = new ReflectionMethod(__CLASS__, $method->getName());
+            if ($reflectionMethod->getReturnType() === null) {
+                trigger_error(sprintf('All public methods in the %s require a return type. None found for %s', get_class($this), $method->getName()));
             }
         }
     }
