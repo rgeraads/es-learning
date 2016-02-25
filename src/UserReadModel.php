@@ -6,13 +6,20 @@ final class UserReadModel
     private $firstName;
     private $lastName;
 
-    private function __construct(int $id, string $firstName, string $lastName)
+    const NO_RETURN_VALUE = 'void';
+
+    public function __construct(int $id, string $firstName, string $lastName)
     {
         $this->guardPublicMethodsHaveReturnTypes();
 
         $this->id        = $id;
         $this->firstName = $firstName;
         $this->lastName  = $lastName;
+    }
+
+    public function foo()
+    {
+        return 'bla';
     }
 
     public static function fromState(array $state): UserReadModel
@@ -51,10 +58,64 @@ final class UserReadModel
                 continue;
             }
 
+            $returnValue = $this->getReturnValue($this->parseMethod($method));
+
             $reflectionMethod = new ReflectionMethod(__CLASS__, $method->getName());
-            if ($reflectionMethod->getReturnType() === null) {
-                trigger_error(sprintf('All public methods in the %s require a return type. None found for %s', get_class($this), $method->getName()));
+
+            if ($returnValue !== self::NO_RETURN_VALUE && $reflectionMethod->getReturnType() === null) {
+                trigger_error(sprintf('All public methods in the %s require a return type. Method "%s" returns %s', get_class($this), $method->getName(), $returnValue));
             }
         }
+    }
+
+    private function parseMethod(ReflectionMethod $method): array
+    {
+        $file = explode(PHP_EOL, file_get_contents(__FILE__));
+
+        $reflectionMethod = new ReflectionMethod(__CLASS__, $method->getName());
+
+        foreach ($file as $key => $row) {
+            if ($key < $reflectionMethod->getStartLine() - 1) {
+                unset($file[$key]);
+                continue;
+            }
+
+            if ($key > $reflectionMethod->getEndLine() - 1) {
+                unset($file[$key]);
+                continue;
+            }
+
+            if (strpos($row, '    ') === 0) {
+                $file[$key] = substr_replace($row, '', 0, 4);
+            }
+        }
+
+        return $file;
+    }
+
+    private function getReturnValue(array $parsedMethod): string
+    {
+        $returnValue = self::NO_RETURN_VALUE;
+
+        foreach ($parsedMethod as $key => $row) {
+            if (strpos(strtolower(trim($row)), 'return') === 0) {
+                $returnValue = substr(ltrim($row), 6);
+
+                return ltrim($this->stripSemicolon($returnValue));
+            }
+        }
+
+        if ($returnValue === self::NO_RETURN_VALUE) {
+            return self::NO_RETURN_VALUE;
+        }
+    }
+
+    private function stripSemicolon($returnValue): string
+    {
+        if (strpos($returnValue, ';', strlen($returnValue) - 1) !== false) {
+            $returnValue = substr($returnValue, 0, strlen($returnValue) - 1);
+        }
+
+        return $returnValue;
     }
 }
