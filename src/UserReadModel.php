@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 final class UserReadModel
 {
     private $id;
@@ -24,7 +26,7 @@ final class UserReadModel
 
     public static function fromState(array $state): UserReadModel
     {
-        return new UserReadModel($state['id'], $state['firstname'], $state['lastname']);
+        return new UserReadModel((int) $state['id'], $state['firstname'], $state['lastname']);
     }
 
     public function getId(): integer
@@ -95,17 +97,15 @@ final class UserReadModel
 
     private function getReturnValue(array $parsedMethod): string
     {
-        $returnValue = self::NO_RETURN_VALUE;
-
         foreach ($parsedMethod as $key => $row) {
-            if (strpos(strtolower(trim($row)), 'return') === 0) {
-                $returnValue = substr(ltrim($row), 6);
+            if ($pos = strpos(strtolower(ltrim($row)), 'return') !== false) {
+                $returnValue = substr(ltrim($row), $pos + 6);
 
                 return ltrim($this->stripSemicolon($returnValue));
             }
         }
 
-        if ($returnValue === self::NO_RETURN_VALUE) {
+        if (!isset($returnValue)) {
             return self::NO_RETURN_VALUE;
         }
     }
