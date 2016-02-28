@@ -25,12 +25,12 @@ final class UserRepository
         }
     }
 
-    public static function mysql(string $host, string $user, string $password, string $database)
+    public static function mysql(string $host, string $user, string $password, string $database): UserRepository
     {
         return new UserRepository(self::MYSQL, $host, $user, $password, $database);
     }
 
-    public static function mongodb(string $host, string $user, string $password, string $database)
+    public static function mongodb(string $host, string $user, string $password, string $database): UserRepository
     {
         return new UserRepository(self::MONGODB, $host, $user, $password, $database);
     }

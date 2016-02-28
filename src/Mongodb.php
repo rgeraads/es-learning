@@ -21,7 +21,7 @@ final class Mongodb
      *
      * @return bool
      */
-    public static function connect(string $host, string $user, string $password, string $database)
+    public static function connect(string $host, string $user, string $password, string $database): Mongodb
     {
         return new Mongodb($host, $user, $password, $database) or exit('Cannot connect');
     }
@@ -38,7 +38,7 @@ final class Mongodb
      *
      * @return bool|\mysqli_result
      */
-    protected function query(string $queryString)
+    protected function query(string $queryString): mysqli_result
     {
         $result = mysqli_query($this->connection, $queryString);
         $this->error();
@@ -51,7 +51,7 @@ final class Mongodb
      *
      * @return array
      */
-    public function select(string $queryString)
+    public function select(string $queryString): array
     {
         $result = $this->query($queryString);
         $this->error();
@@ -69,7 +69,7 @@ final class Mongodb
      *
      * @return int|string
      */
-    public function insert(string $queryString)
+    public function insert(string $queryString): int
     {
         $this->query($queryString);
         $this->error();
@@ -82,7 +82,7 @@ final class Mongodb
      *
      * @return int
      */
-    public function update(string $queryString)
+    public function update(string $queryString): int
     {
         $this->query($queryString);
         $this->error();
@@ -95,7 +95,7 @@ final class Mongodb
      *
      * @return int
      */
-    public function delete(string $queryString)
+    public function delete(string $queryString): int
     {
         $this->query($queryString);
         $this->error();

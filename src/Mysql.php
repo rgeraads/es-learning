@@ -20,9 +20,9 @@ final class Mysql
      * @param string $password
      * @param string $database
      *
-     * @return bool
+     * @return Mysql
      */
-    public static function connect(string $host, string $user, string $password, string $database)
+    public static function connect(string $host, string $user, string $password, string $database): Mysql
     {
         return new Mysql($host, $user, $password, $database);
     }
@@ -34,7 +34,7 @@ final class Mysql
      *
      * @return array
      */
-    public function select(string $table, array $columns = [], array $values = [])
+    public function select(string $table, array $columns = [], array $values = []): array
     {
         $queryString = "SELECT * FROM `$table`";
 
@@ -48,7 +48,7 @@ final class Mysql
      *
      * @return \PDOStatement
      */
-    public function insert(string $table, array $columns, array $values)
+    public function insert(string $table, array $columns, array $values): PDOStatement
     {
         $this->guardEqualAmountOfColumnsAndValues($columns, $values);
 
@@ -67,7 +67,7 @@ final class Mysql
      *
      * @return \PDOStatement
      */
-    public function update(string $table, array $columns, array $values)
+    public function update(string $table, array $columns, array $values): PDOStatement
     {
         $this->guardEqualAmountOfColumnsAndValues($columns, $values);
 
@@ -88,7 +88,7 @@ final class Mysql
      *
      * @return \PDOStatement
      */
-    public function delete(string $table, string $column, string $value)
+    public function delete(string $table, string $column, string $value): PDOStatement
     {
         return $this->execute("DELETE FROM `$table` WHERE $column = $value");
     }
@@ -98,7 +98,7 @@ final class Mysql
      *
      * @return \PDOStatement|array
      */
-    protected function execute($queryString)
+    protected function execute($queryString): PDOStatement
     {
         return $this->connection->query($queryString) ?: $this->connection->errorInfo();
     }
