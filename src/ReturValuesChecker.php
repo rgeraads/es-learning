@@ -2,6 +2,8 @@
 
 declare(strict_types = 1);
 
+final class ReturValuesChecker2{}
+
 final class ReturValuesChecker
 {
     const NO_RETURN_VALUE = 'void';
@@ -14,13 +16,13 @@ final class ReturValuesChecker
 
         /** @var SplFileInfo[] $it */
         foreach ($it as $fi) {
-            $class = $this->getClassFromFile($fi->getPathname());
+            $classes = $this->getClassesFromFile($fi->getPathname());
 
-            if (!$class) {
+            if ($classes === []) {
                 continue;
             }
 
-            $reflectionClass = new ReflectionClass($class);
+            $reflectionClass = new ReflectionClass($classes[0]);
             $methods         = $reflectionClass->getMethods();
 
             foreach ($methods as $method) {
@@ -99,34 +101,17 @@ final class ReturValuesChecker
         return $returnValue;
     }
 
-    private function getClassFromFile(string $filepath): string
+    private function getClassesFromFile(string $filepath): array
     {
-        $fp     = fopen($filepath, 'r');
-        $class  = '';
+        $classes  = [];
+        $tokens = token_get_all(file_get_contents($filepath));
 
-        while ($class === '') {
-            if (feof($fp)) {
-                break;
-            }
-
-            $buffer = fread($fp, filesize($filepath));
-            $tokens = token_get_all($buffer);
-
-            if (strpos($buffer, '{') === false) {
-                continue;
-            }
-
-            for ($i = 0; $i < count($tokens); $i++) {
-                if ($tokens[$i][0] === T_CLASS) {
-                    for ($j = $i + 1; $j < count($tokens); $j++) {
-                        if ($tokens[$j] === '{') {
-                            $class = $tokens[$i + 2][1];
-                        }
-                    }
-                }
+        for ($i = 0; $i < count($tokens); $i++) {
+            if ($tokens[$i][0] === T_CLASS) {
+                $classes[] = $tokens[$i + 2][1];
             }
         }
 
-        return $class;
+        return $classes;
     }
 }
